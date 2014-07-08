@@ -21,3 +21,4 @@ _testmain.go
 
 *.exe
 *.test
+graphite_perf_test_go
