@@ -24,6 +24,7 @@ var (
 	arg_points_per_connection = flag.Uint64("points", 1000, "Datapoints per connection")
 	threads                   = flag.Int("threads", 2, "Threads")
 	runs                      = flag.Uint64("runs", 0, "Number of runs, 0 = infinity")
+	proto                     = flag.String("proto", "tcp", "Protocol, tcp/udp")
 )
 
 func send_data(conn net.Conn, points_per_connection uint64, n uint64) {
@@ -94,7 +95,7 @@ func main() {
 		for j < connections {
 			for i = 0; i < simultaniously; i++ {
 				j++
-				conn, err = net.DialTimeout("tcp", *host, 150*time.Millisecond)
+				conn, err = net.DialTimeout(*proto, *host, 150*time.Millisecond)
 				if err != nil {
 					log.Println("GoRoutine ", i, ", error: ", err)
 					continue
