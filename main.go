@@ -92,6 +92,7 @@ func main() {
 	}
 
 	cnt = 0
+	fails := uint64(0)
 
 	log.Println("Starting...")
 	for {
@@ -101,11 +102,13 @@ func main() {
 			log.Println("Load    : ", connections*points_per_connection, "=", connections, "x", points_per_connection, " metrics")
 
 			j = 0
+			fails = 0
 			for j < connections {
 				for i = 0; i < simultaniously; i++ {
 					j++
 					conn, err = net.DialTimeout(*proto, *host, 150*time.Millisecond)
 					if err != nil {
+						fails++
 						log.Println("GoRoutine ", i, ", error: ", err)
 						continue
 					}
@@ -125,7 +128,7 @@ func main() {
 			end := time.Now().UnixNano()
 			spent := uint64(end - begin)
 			log.Println("Spent   : ", strconv.FormatFloat(float64(spent/1000)/1000/1000, 'f', -1, 32), "seconds")
-			log.Println("Speed   : ", strconv.FormatFloat(float64(connections*points_per_connection)/(float64(spent/1000)/1000/1000), 'f', -1, 32), "metrics/second")
+			log.Println("Speed   : ", strconv.FormatFloat(float64((connections-fails)*points_per_connection)/(float64(spent/1000)/1000/1000), 'f', -1, 32), "metrics/second")
 			if !*do_not_wait {
 				sleep := uint64(60 * time.Second)
 				if spent < sleep {
