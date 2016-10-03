@@ -25,6 +25,7 @@ var (
 	threads                   = flag.Int("threads", 2, "Threads")
 	runs                      = flag.Uint64("runs", 0, "Number of runs, 0 = infinity")
 	proto                     = flag.String("proto", "tcp", "Protocol, tcp/udp")
+	interval                  = flag.Uint64("interval", 60, "Metric interval in seconds")
 )
 
 func send_data(conn net.Conn, points_per_connection uint64, n uint64) {
@@ -117,7 +118,7 @@ func main() {
 		spent := uint64(end - begin)
 		log.Println("Spent   : ", strconv.FormatFloat(float64(spent/1000)/1000/1000, 'f', -1, 32), "seconds")
 		log.Println("Speed   : ", strconv.FormatFloat(float64(connections*points_per_connection)/(float64(spent/1000)/1000/1000), 'f', -1, 32), "metrics/second")
-		sleep := uint64(60 * time.Second)
+		sleep := *interval * uint64(time.Second)
 		if spent < sleep {
 			sleep -= spent
 			log.Println("Sleeping: ", strconv.FormatFloat(float64(sleep/1000)/1000/1000, 'f', -1, 32), "seconds")
